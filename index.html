@@ -24,7 +24,7 @@
   --vaso-bg: rgba(36, 39, 48, 0.45);
   --vaso-border: rgba(255, 255, 255, 0.14);
   --vaso-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
-  --vaso-blur: blur(24px) saturate(170%);
+  --vaso-blur: blur(9px) saturate(135%);
   --light-x: 1.5px;
   --light-y: 1.5px;
   
@@ -298,7 +298,19 @@ html, body {
 .tool-capsule-btn { width: 44px; height: 44px; }
 .tool-capsule-btn.active { box-shadow: 0 0 0 3px rgba(255,255,255,.12), 0 8px 22px rgba(0,0,0,.35); }
 #studio-island { width: 304px; padding: 13px; gap: 11px; }
-.studio-card { background: rgba(7, 8, 11, 0.24); border-color: rgba(255,255,255,.09); padding: 11px; }
+.studio-card { background: rgba(7, 8, 11, 0.42); border-color: rgba(255,255,255,.09); padding: 11px; }
+/* Keep Vaso's refraction and edge highlights, but make controls crisp and readable. */
+[data-vaso] { backdrop-filter: blur(1.35px) saturate(1.08) !important; }
+#top-island, #tools-capsule, #studio-island, #hud-pill { background: rgba(15, 17, 22, .84); }
+#top-island:has(#btn-focus), #tools-capsule, #studio-island { box-shadow: 0 14px 34px rgba(0,0,0,.34), 0 1px 0 rgba(255,255,255,.12) inset; }
+body.focus-mode #studio-island, body.focus-mode #tools-capsule, body.focus-mode #hud-pill { opacity: 0; transform: scale(.96); pointer-events: none; }
+body.focus-mode #top-island { opacity: .18; transform: translateX(-50%) translateY(-54px); pointer-events: none; }
+body.focus-mode #canvas-wrap { box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 28px 80px rgba(0,0,0,.55); }
+body.focus-mode #btn-focus { pointer-events: auto; opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  body.focus-mode #top-island, body.focus-mode #studio-island, body.focus-mode #tools-capsule { transition: none; }
+}
+
 .studio-card-title { color: #c4c8d0; }
 .vaso-btn:focus-visible,
 .tool-capsule-btn:focus-visible,
@@ -353,6 +365,44 @@ html, body {
 }
 
 /* Color Studio Widget */
+.color-wheel-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 3px 0 8px;
+}
+#color-wheel {
+  width: 138px;
+  height: 138px;
+  border-radius: 50%;
+  background: conic-gradient(#ff003c, #ff8a00, #ffe600, #24ff00, #00eaff, #164dff, #c400ff, #ff003c);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.5), 0 8px 20px rgba(0,0,0,.22);
+  cursor: crosshair;
+  position: relative;
+  touch-action: none;
+}
+#color-wheel::after {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 5%, rgba(255,255,255,0) 68%);
+  opacity: .95;
+  pointer-events: none;
+}
+#color-wheel-handle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 1px 4px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.18);
+  z-index: 2;
+  pointer-events: none;
+}
+.wheel-readout { min-width: 52px; text-align: center; font: 10px 'JetBrains Mono', monospace; color: var(--text-muted); }
 #sv-box {
   position: relative;
   width: 100%;
@@ -673,6 +723,66 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
     width: 260px;
   }
 }
+
+/* Mobile-first editor tuning: keep glass readable and controls reachable. */
+@media (max-width: 680px) {
+  #top-island {
+    top: max(10px, env(safe-area-inset-top));
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-width: none;
+    transform: none;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 16px;
+  }
+
+  #top-island .brand-lockup { min-width: 0; gap: 7px; }
+  #top-island .brand-lockup strong { font-size: 11px; letter-spacing: .08em; }
+  #top-island .brand-lockup span { display: none; }
+  #top-island .vaso-btn { width: 34px; height: 34px; }
+  #top-island .top-divider { margin: 0 2px; }
+
+  #tools-capsule {
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    padding: 5px;
+    gap: 3px;
+    border-radius: 16px;
+  }
+  #tools-capsule .tool-capsule-btn { width: 32px; height: 32px; }
+  #tools-capsule .tool-separator { margin: 2px 4px; }
+
+  #studio-island {
+    top: auto;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: min(292px, calc(100vw - 62px));
+    max-height: min(58vh, 470px);
+    overflow-y: auto;
+    border-radius: 18px;
+  }
+  #studio-island.collapsed { transform: translateX(calc(100% + 18px)); }
+  #studio-toggle-btn { right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); }
+  #hud-pill { bottom: max(10px, env(safe-area-inset-bottom)); left: 64px; max-width: calc(100vw - 142px); }
+  #hud-pill .hud-hint { display: none; }
+
+  .focus-mode #top-island { opacity: .55; }
+  .focus-mode #studio-island, .focus-mode #tools-capsule { opacity: .18; pointer-events: none; }
+}
+
+@media (max-width: 420px) {
+  .color-wheel-row { gap: 8px; }
+  #color-wheel { width: 116px; height: 116px; }
+  #color-wheel::after { inset: 15px; }
+  #top-island .history-actions, #top-island .document-actions { display: none; }
+  #studio-island { width: calc(100vw - 62px); }
+  #hud-pill { font-size: 9px; }
+}
 </style>
 </head>
 <body>
@@ -768,6 +878,9 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   <button class="vaso-btn" id="btn-zoom-fit" data-tip="Fit to View">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
   </button>
+  <button class="vaso-btn" id="btn-focus" data-tip="Focus Mode (F)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3m0 8v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
+  </button>
 
   <input type="file" id="file-open" accept=".json,.ikis,.inkboard" hidden>
   <input type="file" id="file-import" accept="image/*" hidden>
@@ -835,6 +948,12 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
     <div class="studio-card-title">
       <span>Color Studio</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+    </div>
+    <div class="color-wheel-row">
+      <div id="color-wheel" aria-label="Hue color wheel" role="slider" tabindex="0">
+        <div id="color-wheel-handle"></div>
+      </div>
+      <div class="wheel-readout"><span id="wheel-hex">#1b1b1b</span><br>HUE</div>
     </div>
     <div id="sv-box">
       <canvas id="sv" width="260" height="120"></canvas>
@@ -1444,6 +1563,7 @@ function setForegroundColor(colorHex, recordHistory = true) {
   $('#hex-input').value = fg.replace('#', '');
   $('#hue').value = Math.round(hsv[0]);
   renderSVBox();
+  updateWheelHandle();
 
   if (recordHistory) {
     const hist = $('#history-palette');
@@ -2415,9 +2535,36 @@ $('#brush-stabilizer').oninput = e => {
 $('#shape-kind').onchange = e => shapeKind = e.target.value;
 $('#shape-fill-chk').onchange = e => shapeFill = e.target.checked;
 
+function updateWheelHandle() {
+  const wheel = $('#color-wheel');
+  const handle = $('#color-wheel-handle');
+  const angle = (hsv[0] - 90) * Math.PI / 180;
+  const radius = wheel.clientWidth * .39;
+  const cx = wheel.clientWidth / 2;
+  const cy = wheel.clientHeight / 2;
+  handle.style.left = (cx + Math.cos(angle) * radius) + 'px';
+  handle.style.top = (cy + Math.sin(angle) * radius) + 'px';
+  $('#wheel-hex').textContent = hsvToHex(...hsv).toUpperCase();
+}
 $('#hue').oninput = e => {
   hsv[0] = +e.target.value;
   setForegroundColor(hsvToHex(...hsv), false);
+  updateWheelHandle();
+};
+function handleWheelPointer(e) {
+  const wheel = $('#color-wheel');
+  const r = wheel.getBoundingClientRect();
+  const angle = Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2));
+  hsv[0] = Math.round((angle * 180 / Math.PI + 90 + 360) % 360);
+  $('#hue').value = hsv[0];
+  setForegroundColor(hsvToHex(...hsv), false);
+  updateWheelHandle();
+}
+$('#color-wheel').onpointerdown = e => {
+  e.currentTarget.setPointerCapture(e.pointerId);
+  handleWheelPointer(e);
+  e.currentTarget.onpointermove = handleWheelPointer;
+  e.currentTarget.onpointerup = () => { e.currentTarget.onpointermove = null; setForegroundColor(fg, true); };
 };
 
 function handleSVPointer(e) {
@@ -2523,6 +2670,10 @@ $('#btn-clear').onclick = () => {
 $('#btn-zoom-in').onclick = () => zoomAt(1.25);
 $('#btn-zoom-out').onclick = () => zoomAt(0.8);
 $('#btn-zoom-fit').onclick = fitToStage;
+$('#btn-focus').onclick = () => {
+  document.body.classList.toggle('focus-mode');
+  showToast(document.body.classList.contains('focus-mode') ? 'Focus Mode On' : 'Focus Mode Off');
+};
 $('#btn-zoom-val').onclick = () => {
   view.z = 1;
   applyViewportTransform();
@@ -2600,6 +2751,7 @@ addEventListener('keydown', e => {
   if (ctrl && k === 'a') { e.preventDefault(); sel = { x: 0, y: 0, w: W, h: H }; drawOverlay(); return; }
   if (ctrl && k === 'd') { e.preventDefault(); sel = null; drawOverlay(); return; }
   if (k === 'delete' || k === 'backspace') { $('#btn-clear').click(); return; }
+if (k === 'f' && !e.metaKey && !e.ctrlKey && !e.altKey) { $('#btn-focus').click(); return; }
   if (k === '[') {
     $('#brush-size').value = Math.max(1, brush.size - 2);
     $('#brush-size').dispatchEvent(new Event('input'));
@@ -2654,9 +2806,9 @@ addEventListener('keyup', e => {
   import { createGlass, createGlassGroup } from 'https://esm.sh/vaso@1.1.1/core';
 
   const glassOptions = {
-    depth: 0.85,
-    blur: 0.65,
-    dispersion: 0.28,
+    depth: 1.15,
+    blur: 0.12,
+    dispersion: 0.62,
     specular: 0.65,
     light: 'pointer',
     pressable: true,
@@ -2674,9 +2826,9 @@ addEventListener('keyup', e => {
 
     const topGroup = createGlassGroup(topIsland, {
       smooth: 0.7,
-      depth: 0.7,
-      blur: 0.55,
-      dispersion: 0.2,
+      depth: 0.95,
+      blur: 0.16,
+      dispersion: 0.46,
       specular: 0.6,
       light: 'pointer',
       overflow: 'visible',
@@ -2688,8 +2840,8 @@ addEventListener('keyup', e => {
 
     const mounted = [
       [toolCapsule, { ...glassOptions, depth: 1.05, blur: 0.45, dispersion: 0.22 }],
-      [studioIsland, { ...glassOptions, depth: 0.35, blur: 5, dispersion: false, pressable: false, ripple: false }],
-      [hud, { ...glassOptions, depth: 0.35, blur: 3, dispersion: false, pressable: false, ripple: false }],
+      [studioIsland, { ...glassOptions, depth: 0.35, blur: 0.8, dispersion: false, pressable: false, ripple: false }],
+      [hud, { ...glassOptions, depth: 0.35, blur: 0.55, dispersion: false, pressable: false, ripple: false }],
       [restore, { ...glassOptions, depth: 0.9, blur: 0.6, dispersion: 0.25 }],
     ];
 
