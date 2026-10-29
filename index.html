@@ -268,6 +268,42 @@ html, body {
   display: flex;
 }
 
+/* Premium studio polish: quiet hierarchy, crisp focus, and softer depth */
+#top-island,
+#tools-capsule,
+#studio-island,
+#hud-pill {
+  isolation: isolate;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.38), 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+#top-island::after,
+#tools-capsule::after,
+#studio-island::after,
+#hud-pill::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,.12), transparent 34%, transparent 68%, rgba(255,255,255,.04));
+  opacity: .7;
+  z-index: -1;
+}
+#top-island { padding: 7px 11px; gap: 7px; }
+#top-island .vaso-btn { width: 34px; height: 34px; }
+#top-island .brand-pill { padding: 0 8px 0 2px; gap: 8px; }
+#top-island .brand-icon { width: 28px; height: 28px; }
+#tools-capsule { gap: 6px; padding: 9px 7px; }
+.tool-capsule-btn { width: 44px; height: 44px; }
+.tool-capsule-btn.active { box-shadow: 0 0 0 3px rgba(255,255,255,.12), 0 8px 22px rgba(0,0,0,.35); }
+#studio-island { width: 304px; padding: 13px; gap: 11px; }
+.studio-card { background: rgba(7, 8, 11, 0.24); border-color: rgba(255,255,255,.09); padding: 11px; }
+.studio-card-title { color: #c4c8d0; }
+.vaso-btn:focus-visible,
+.tool-capsule-btn:focus-visible,
+.vaso-segmented-tab:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
 /* Segmented Control Pill (Vaso Style) */
 .vaso-segmented-track {
   display: grid;
