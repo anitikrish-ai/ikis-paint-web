@@ -24,7 +24,7 @@
   --vaso-bg: rgba(36, 39, 48, 0.45);
   --vaso-border: rgba(255, 255, 255, 0.14);
   --vaso-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
-  --vaso-blur: blur(24px) saturate(170%);
+  --vaso-blur: blur(9px) saturate(135%);
   --light-x: 1.5px;
   --light-y: 1.5px;
   
@@ -684,6 +684,63 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   #studio-island {
     width: 260px;
   }
+}
+
+/* Mobile-first editor tuning: keep glass readable and controls reachable. */
+@media (max-width: 680px) {
+  #top-island {
+    top: max(10px, env(safe-area-inset-top));
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-width: none;
+    transform: none;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 16px;
+  }
+
+  #top-island .brand-lockup { min-width: 0; gap: 7px; }
+  #top-island .brand-lockup strong { font-size: 11px; letter-spacing: .08em; }
+  #top-island .brand-lockup span { display: none; }
+  #top-island .vaso-btn { width: 34px; height: 34px; }
+  #top-island .top-divider { margin: 0 2px; }
+
+  #tools-capsule {
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    padding: 5px;
+    gap: 3px;
+    border-radius: 16px;
+  }
+  #tools-capsule .tool-capsule-btn { width: 32px; height: 32px; }
+  #tools-capsule .tool-separator { margin: 2px 4px; }
+
+  #studio-island {
+    top: auto;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: min(292px, calc(100vw - 62px));
+    max-height: min(58vh, 470px);
+    overflow-y: auto;
+    border-radius: 18px;
+  }
+  #studio-island.collapsed { transform: translateX(calc(100% + 18px)); }
+  #studio-toggle-btn { right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); }
+  #hud-pill { bottom: max(10px, env(safe-area-inset-bottom)); left: 64px; max-width: calc(100vw - 142px); }
+  #hud-pill .hud-hint { display: none; }
+
+  .focus-mode #top-island { opacity: .55; }
+  .focus-mode #studio-island, .focus-mode #tools-capsule { opacity: .18; pointer-events: none; }
+}
+
+@media (max-width: 420px) {
+  #top-island .history-actions, #top-island .document-actions { display: none; }
+  #studio-island { width: calc(100vw - 62px); }
+  #hud-pill { font-size: 9px; }
 }
 </style>
 </head>
@@ -2675,7 +2732,7 @@ addEventListener('keyup', e => {
 
   const glassOptions = {
     depth: 0.85,
-    blur: 0.65,
+      blur: 0.28,
     dispersion: 0.28,
     specular: 0.65,
     light: 'pointer',
@@ -2708,8 +2765,8 @@ addEventListener('keyup', e => {
 
     const mounted = [
       [toolCapsule, { ...glassOptions, depth: 1.05, blur: 0.45, dispersion: 0.22 }],
-      [studioIsland, { ...glassOptions, depth: 0.35, blur: 5, dispersion: false, pressable: false, ripple: false }],
-      [hud, { ...glassOptions, depth: 0.35, blur: 3, dispersion: false, pressable: false, ripple: false }],
+      [studioIsland, { ...glassOptions, depth: 0.35, blur: 0.8, dispersion: false, pressable: false, ripple: false }],
+      [hud, { ...glassOptions, depth: 0.35, blur: 0.55, dispersion: false, pressable: false, ripple: false }],
       [restore, { ...glassOptions, depth: 0.9, blur: 0.6, dispersion: 0.25 }],
     ];
 
