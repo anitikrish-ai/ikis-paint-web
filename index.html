@@ -298,7 +298,19 @@ html, body {
 .tool-capsule-btn { width: 44px; height: 44px; }
 .tool-capsule-btn.active { box-shadow: 0 0 0 3px rgba(255,255,255,.12), 0 8px 22px rgba(0,0,0,.35); }
 #studio-island { width: 304px; padding: 13px; gap: 11px; }
-.studio-card { background: rgba(7, 8, 11, 0.24); border-color: rgba(255,255,255,.09); padding: 11px; }
+.studio-card { background: rgba(7, 8, 11, 0.42); border-color: rgba(255,255,255,.09); padding: 11px; }
+/* Keep Vaso's refraction and edge highlights, but make controls crisp and readable. */
+[data-vaso] { backdrop-filter: blur(1.35px) saturate(1.08) !important; }
+#top-island, #tools-capsule, #studio-island, #hud-pill { background: rgba(15, 17, 22, .84); }
+#top-island:has(#btn-focus), #tools-capsule, #studio-island { box-shadow: 0 14px 34px rgba(0,0,0,.34), 0 1px 0 rgba(255,255,255,.12) inset; }
+body.focus-mode #studio-island, body.focus-mode #tools-capsule, body.focus-mode #hud-pill { opacity: 0; transform: scale(.96); pointer-events: none; }
+body.focus-mode #top-island { opacity: .18; transform: translateX(-50%) translateY(-54px); pointer-events: none; }
+body.focus-mode #canvas-wrap { box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 28px 80px rgba(0,0,0,.55); }
+body.focus-mode #btn-focus { pointer-events: auto; opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  body.focus-mode #top-island, body.focus-mode #studio-island, body.focus-mode #tools-capsule { transition: none; }
+}
+
 .studio-card-title { color: #c4c8d0; }
 .vaso-btn:focus-visible,
 .tool-capsule-btn:focus-visible,
@@ -767,6 +779,9 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
   </button>
   <button class="vaso-btn" id="btn-zoom-fit" data-tip="Fit to View">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+  </button>
+  <button class="vaso-btn" id="btn-focus" data-tip="Focus Mode (F)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3m0 8v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
   </button>
 
   <input type="file" id="file-open" accept=".json,.ikis,.inkboard" hidden>
@@ -2523,6 +2538,10 @@ $('#btn-clear').onclick = () => {
 $('#btn-zoom-in').onclick = () => zoomAt(1.25);
 $('#btn-zoom-out').onclick = () => zoomAt(0.8);
 $('#btn-zoom-fit').onclick = fitToStage;
+$('#btn-focus').onclick = () => {
+  document.body.classList.toggle('focus-mode');
+  showToast(document.body.classList.contains('focus-mode') ? 'Focus Mode On' : 'Focus Mode Off');
+};
 $('#btn-zoom-val').onclick = () => {
   view.z = 1;
   applyViewportTransform();
@@ -2600,6 +2619,7 @@ addEventListener('keydown', e => {
   if (ctrl && k === 'a') { e.preventDefault(); sel = { x: 0, y: 0, w: W, h: H }; drawOverlay(); return; }
   if (ctrl && k === 'd') { e.preventDefault(); sel = null; drawOverlay(); return; }
   if (k === 'delete' || k === 'backspace') { $('#btn-clear').click(); return; }
+if (k === 'f' && !e.metaKey && !e.ctrlKey && !e.altKey) { $('#btn-focus').click(); return; }
   if (k === '[') {
     $('#brush-size').value = Math.max(1, brush.size - 2);
     $('#brush-size').dispatchEvent(new Event('input'));
