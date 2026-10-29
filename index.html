@@ -365,6 +365,44 @@ body.focus-mode #btn-focus { pointer-events: auto; opacity: 1; }
 }
 
 /* Color Studio Widget */
+.color-wheel-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 3px 0 8px;
+}
+#color-wheel {
+  width: 138px;
+  height: 138px;
+  border-radius: 50%;
+  background: conic-gradient(#ff003c, #ff8a00, #ffe600, #24ff00, #00eaff, #164dff, #c400ff, #ff003c);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.5), 0 8px 20px rgba(0,0,0,.22);
+  cursor: crosshair;
+  position: relative;
+  touch-action: none;
+}
+#color-wheel::after {
+  content: '';
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 5%, rgba(255,255,255,0) 68%);
+  opacity: .95;
+  pointer-events: none;
+}
+#color-wheel-handle {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 1px 4px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.18);
+  z-index: 2;
+  pointer-events: none;
+}
+.wheel-readout { min-width: 52px; text-align: center; font: 10px 'JetBrains Mono', monospace; color: var(--text-muted); }
 #sv-box {
   position: relative;
   width: 100%;
@@ -738,6 +776,9 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 }
 
 @media (max-width: 420px) {
+  .color-wheel-row { gap: 8px; }
+  #color-wheel { width: 116px; height: 116px; }
+  #color-wheel::after { inset: 15px; }
   #top-island .history-actions, #top-island .document-actions { display: none; }
   #studio-island { width: calc(100vw - 62px); }
   #hud-pill { font-size: 9px; }
@@ -907,6 +948,12 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
     <div class="studio-card-title">
       <span>Color Studio</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+    </div>
+    <div class="color-wheel-row">
+      <div id="color-wheel" aria-label="Hue color wheel" role="slider" tabindex="0">
+        <div id="color-wheel-handle"></div>
+      </div>
+      <div class="wheel-readout"><span id="wheel-hex">#1b1b1b</span><br>HUE</div>
     </div>
     <div id="sv-box">
       <canvas id="sv" width="260" height="120"></canvas>
@@ -1516,6 +1563,7 @@ function setForegroundColor(colorHex, recordHistory = true) {
   $('#hex-input').value = fg.replace('#', '');
   $('#hue').value = Math.round(hsv[0]);
   renderSVBox();
+  updateWheelHandle();
 
   if (recordHistory) {
     const hist = $('#history-palette');
@@ -2487,9 +2535,36 @@ $('#brush-stabilizer').oninput = e => {
 $('#shape-kind').onchange = e => shapeKind = e.target.value;
 $('#shape-fill-chk').onchange = e => shapeFill = e.target.checked;
 
+function updateWheelHandle() {
+  const wheel = $('#color-wheel');
+  const handle = $('#color-wheel-handle');
+  const angle = (hsv[0] - 90) * Math.PI / 180;
+  const radius = wheel.clientWidth * .39;
+  const cx = wheel.clientWidth / 2;
+  const cy = wheel.clientHeight / 2;
+  handle.style.left = (cx + Math.cos(angle) * radius) + 'px';
+  handle.style.top = (cy + Math.sin(angle) * radius) + 'px';
+  $('#wheel-hex').textContent = hsvToHex(...hsv).toUpperCase();
+}
 $('#hue').oninput = e => {
   hsv[0] = +e.target.value;
   setForegroundColor(hsvToHex(...hsv), false);
+  updateWheelHandle();
+};
+function handleWheelPointer(e) {
+  const wheel = $('#color-wheel');
+  const r = wheel.getBoundingClientRect();
+  const angle = Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2));
+  hsv[0] = Math.round((angle * 180 / Math.PI + 90 + 360) % 360);
+  $('#hue').value = hsv[0];
+  setForegroundColor(hsvToHex(...hsv), false);
+  updateWheelHandle();
+}
+$('#color-wheel').onpointerdown = e => {
+  e.currentTarget.setPointerCapture(e.pointerId);
+  handleWheelPointer(e);
+  e.currentTarget.onpointermove = handleWheelPointer;
+  e.currentTarget.onpointerup = () => { e.currentTarget.onpointermove = null; setForegroundColor(fg, true); };
 };
 
 function handleSVPointer(e) {
@@ -2731,9 +2806,9 @@ addEventListener('keyup', e => {
   import { createGlass, createGlassGroup } from 'https://esm.sh/vaso@1.1.1/core';
 
   const glassOptions = {
-    depth: 0.85,
-      blur: 0.28,
-    dispersion: 0.28,
+    depth: 1.15,
+    blur: 0.12,
+    dispersion: 0.62,
     specular: 0.65,
     light: 'pointer',
     pressable: true,
@@ -2751,9 +2826,9 @@ addEventListener('keyup', e => {
 
     const topGroup = createGlassGroup(topIsland, {
       smooth: 0.7,
-      depth: 0.7,
-      blur: 0.55,
-      dispersion: 0.2,
+      depth: 0.95,
+      blur: 0.16,
+      dispersion: 0.46,
       specular: 0.6,
       light: 'pointer',
       overflow: 'visible',
