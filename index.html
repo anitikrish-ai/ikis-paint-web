@@ -96,11 +96,9 @@ html, body {
    VASO LIQUID GLASS COMPONENTS (FLOATING ISLANDS & PILLS)
    ========================================================================== */
 
-/* Liquid Glass Base */
+/* Liquid Glass Base: the visual layer is supplied by Vaso core below. */
 .vaso-component {
   background: var(--vaso-bg);
-  backdrop-filter: var(--vaso-blur);
-  -webkit-backdrop-filter: var(--vaso-blur);
   border: 1px solid var(--vaso-border);
   box-shadow: 
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.35),
@@ -2612,6 +2610,68 @@ addEventListener('keyup', e => {
 
   window.addEventListener('resize', fitToStage);
 })();
+</script>
+
+<!-- Vaso core is mounted onto the editor's existing functional surfaces. The editor remains
+     dependency-free while the engine provides real refraction, dispersion, depth, and fallback copies. -->
+<script type="module">
+  import { createGlass, createGlassGroup } from 'https://esm.sh/vaso@1.1.1/core';
+
+  const glassOptions = {
+    depth: 0.85,
+    blur: 0.65,
+    dispersion: 0.28,
+    specular: 0.65,
+    light: 'pointer',
+    pressable: true,
+    ripple: true,
+  };
+
+  function mountVasoGlass() {
+    const topIsland = document.querySelector('#top-island');
+    const toolCapsule = document.querySelector('#tools-capsule');
+    const studioIsland = document.querySelector('#studio-island');
+    const hud = document.querySelector('#hud-pill');
+    const restore = document.querySelector('#studio-toggle-btn');
+
+    if (!topIsland || !toolCapsule || !studioIsland) return;
+
+    const topGroup = createGlassGroup(topIsland, {
+      smooth: 0.7,
+      depth: 0.7,
+      blur: 0.55,
+      dispersion: 0.2,
+      specular: 0.6,
+      light: 'pointer',
+      overflow: 'visible',
+    });
+
+    topIsland.querySelectorAll('.vaso-btn').forEach((button) => {
+      topGroup.add(button, { radius: 999, outset: 2 });
+    });
+
+    const mounted = [
+      [toolCapsule, { ...glassOptions, depth: 1.05, blur: 0.45, dispersion: 0.22 }],
+      [studioIsland, { ...glassOptions, depth: 0.35, blur: 5, dispersion: false, pressable: false, ripple: false }],
+      [hud, { ...glassOptions, depth: 0.35, blur: 3, dispersion: false, pressable: false, ripple: false }],
+      [restore, { ...glassOptions, depth: 0.9, blur: 0.6, dispersion: 0.25 }],
+    ];
+
+    const glasses = mounted
+      .filter(([element]) => element)
+      .map(([element, options]) => createGlass(element, options));
+
+    window.addEventListener('beforeunload', () => {
+      topGroup.destroy();
+      glasses.forEach((glass) => glass.destroy());
+    }, { once: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mountVasoGlass, { once: true });
+  } else {
+    mountVasoGlass();
+  }
 </script>
 </body>
 </html>
