@@ -18,15 +18,15 @@
     const g = window.liquidGlass(el, opts);
     const chain = el.style.backdropFilter;
     if (chain) {
-      const trimmed = chain + ' brightness(.84)';
+      const trimmed = chain + ' brightness(.9)';
       el.style.backdropFilter = trimmed;
       el.style.webkitBackdropFilter = trimmed;
     }
     return g;
   }
 
-  const small = { scale: -34, chroma: 2, border: 0.12, mapBlur: 6, blur: 5, saturate: 1.4, fallbackBlur: 18 };
-  const large = { scale: -40, chroma: 2, border: 0.04, mapBlur: 16, blur: 14, saturate: 1.3, fallbackBlur: 24 };
+  const small = { scale: -78, chroma: 4, border: 0.14, mapBlur: 7, blur: 2, saturate: 1.5, fallbackBlur: 18 };
+  const large = { scale: -60, chroma: 3, border: 0.06, mapBlur: 14, blur: 10, saturate: 1.4, fallbackBlur: 24 };
 
   function mountAll() {
     $$('#top-island > .glass').forEach(el => mount(el, small));

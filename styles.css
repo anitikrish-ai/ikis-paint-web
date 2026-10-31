@@ -23,8 +23,8 @@
 
   /* Glass tint is deliberately dark enough to keep light glyphs above 4.5:1
      even when the white canvas sits directly underneath. */
-  --glass-tint-top: rgba(34, 35, 40, .5);
-  --glass-tint-bot: rgba(16, 17, 20, .62);
+  --glass-tint-top: rgba(40, 42, 48, .26);
+  --glass-tint-bot: rgba(18, 19, 22, .42);
   --glass-solid: #1b1c20;
 
   --r-xs: 6px;
@@ -71,7 +71,9 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: radial-gradient(120% 90% at 50% 40%, #1d1e21 0%, var(--stage) 62%, #0e0f10 100%);
+  background:
+    radial-gradient(rgba(255, 255, 255, .16) 1px, transparent 1.4px) 0 0 / 28px 28px,
+    radial-gradient(120% 90% at 50% 40%, #202124 0%, var(--stage) 62%, #0e0f10 100%);
   touch-action: none;
   cursor: crosshair;
 }
@@ -99,9 +101,10 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
   background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bot));
   border-radius: var(--r-lg);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .34),
-    inset 0 0 0 1px rgba(255, 255, 255, .09),
-    inset 0 -12px 20px -12px rgba(255, 255, 255, .07),
+    inset 0 1px 1px rgba(255, 255, 255, .6),
+    inset 0 0 0 1px rgba(255, 255, 255, .16),
+    inset 0 -10px 16px -10px rgba(255, 255, 255, .16),
+    inset 0 12px 18px -14px rgba(255, 255, 255, .22),
     0 10px 24px -10px rgba(0, 0, 0, .55),
     0 1px 4px rgba(0, 0, 0, .25);
 }
@@ -113,24 +116,24 @@ svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round
   pointer-events: none;
   z-index: -1;
   background:
-    linear-gradient(140deg, rgba(255, 255, 255, .16) 0%, rgba(255, 255, 255, 0) 34%),
+    linear-gradient(140deg, rgba(255, 255, 255, .26) 0%, rgba(255, 255, 255, 0) 38%),
     linear-gradient(320deg, rgba(255, 255, 255, .05) 0%, rgba(255, 255, 255, 0) 30%);
 }
 /* Safari and Firefox get blur only, so give them a little more body. */
 .glass.lg-fallback {
-  --glass-tint-top: rgba(34, 35, 40, .62);
-  --glass-tint-bot: rgba(16, 17, 20, .74);
+  --glass-tint-top: rgba(34, 35, 40, .42);
+  --glass-tint-bot: rgba(16, 17, 20, .58);
 }
 /* Large surfaces read as thicker material. */
 .glass--thick {
-  --glass-tint-top: rgba(30, 31, 35, .8);
-  --glass-tint-bot: rgba(15, 16, 19, .88);
+  --glass-tint-top: rgba(34, 35, 40, .58);
+  --glass-tint-bot: rgba(16, 17, 20, .74);
   border-radius: var(--r-xl);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, .34), inset 0 0 0 1px rgba(255, 255, 255, .09),
     0 26px 60px -18px rgba(0, 0, 0, .7), 0 3px 10px rgba(0, 0, 0, .3);
 }
-.glass--thick.lg-fallback { --glass-tint-top: rgba(30, 31, 35, .8); --glass-tint-bot: rgba(15, 16, 19, .88); }
+.glass--thick.lg-fallback { --glass-tint-top: rgba(30, 31, 35, .78); --glass-tint-bot: rgba(15, 16, 19, .86); }
 
 /* 5. Controls ----------------------------------------------------------- */
 .btn, .tool-capsule-btn {
